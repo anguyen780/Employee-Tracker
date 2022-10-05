@@ -257,8 +257,14 @@ function updateEmployee() {
                 }
             ])
             .then((answer) => {
-                db.query('UPDATE employee SET role_id = ? WHERE employee_id = ?', [answer.eName, answer.newRole], (err, results) => {
-                    startApp();
+                db.query(`SELECT id FROM employee WHERE first_name = "${answer.eName.split(' ')[0]}" AND last_name = "${answer.eName.split(' ')[1]}"`,(err, res)=>{
+                    let emId = res[0].id
+                    db.query(`SELECT id FROM role WHERE title = "${answer.newRole}"`, (err, res)=>{
+                        let rolId = res[0].id
+                        db.query('UPDATE employee SET role_id = ? WHERE id = ?', [rolId, emId], (err, results) => {
+                            startApp();
+                        })
+                    })
                 })
             })
     })

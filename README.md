@@ -24,7 +24,7 @@ Clone the repo to your machine and install packages with npm i
 
 Using this application allows user to add, edit or view employees, departments, roles and managers in the company.
 
-[Walk through video](https://drive.google.com/file/d/1KmJTp7xQUCczl5TPL5eWMMFUE6ikbA0z/view?usp=sharing)
+[Walk through video](https://drive.google.com/file/d/10-yQ22cAOSSo3gmZ6Clh2p-kHOhsw1oL/view?usp=sharing)
 
 ## Questions
 
