@@ -75,8 +75,8 @@ const startApp = () => {
                     updateEmployee();
                     break;
                 case 'Exit':
-                    exitPrompt();
-                    break;
+                    console.log('Thank you for using Employee Tracker.');
+                    process.exit();
             }
         })
 };
@@ -215,19 +215,49 @@ function addEmployee() {
                 choices: managerArr
             }
         ]).then((answer) => {
-            db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE (${answer.firstName}),(${answer.lastName}),(${answer.roleChoices}),(${answer.employeeMan})`, (err, res)=>{
-                if (err) throw err;
+            db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE (${answer.firstName}),(${answer.lastName}),(${answer.roleChoices}),(${answer.employeeMan})`, (err, res) => {
                 console.log(`Added ${answer.firstName} ${answer.lastName} to the database`);
                 startApp();
             })
         })
 };
-
+// updates employee
 function updateEmployee() {
+    let employeeArr = [];
+    let roleArr = [];
 
-}
+    db.query('SELECT CONCAT(employee.first_name, " ",employee.last_name) as employees FROM employee', (err, result) => {
+        if (err) throw err;
+        for (let i = 0; i < result.length; i++) {
+            employeeArr.push(result[i].employees);
+        }
+        db.query('SELECT title FROM role', (err, res) => {
+            for (let k = 0; k < res.length; k++) {
+                roleArr.push(res[k].title);
+            }
+        })
+        inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    name: 'eName',
+                    message: 'Which employee would you like to update?',
+                    choices: employeeArr
+                },
+                {
+                    type: 'list',
+                    name: 'newRole',
+                    message: 'Which role would you like to assign to the employee?',
+                    choices: roleArr
+                }
+            ])
+            .then((answer) => {
+                db.query('UPDATE employee SET role_id = ? WHERE employee_id = ?', [answer.eName, answer.newRole], (err, results) => {
+                    startApp();
+                })
+            })
+    })
 
-function exitPrompt() {
 
 }
 
