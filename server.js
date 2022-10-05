@@ -2,7 +2,6 @@ const express = require('express');
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const consoleTable = require('console.table');
-const { query } = require('express');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -161,8 +160,7 @@ function addRole() {
                         department_id = res[k].id;
                     }
                 }
-                db.query(`INSERT INTO role
-    SET ?`, {
+                db.query(`INSERT INTO role SET ?`, {
                     title: answers.newRole,
                     salary: answers.salary,
                     department_id: department_id
@@ -215,9 +213,16 @@ function addEmployee() {
                 choices: managerArr
             }
         ]).then((answer) => {
-            db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE (${answer.firstName}),(${answer.lastName}),(${answer.roleChoices}),(${answer.employeeMan})`, (err, res) => {
-                console.log(`Added ${answer.firstName} ${answer.lastName} to the database`);
-                startApp();
+            db.query(`SELECT id FROM role WHERE title = "${answer.roleChoices}"`, (err, res) => {
+                if (err) throw err;
+                let roleId = res[0].id;
+                db.query(`SELECT id FROM employee WHERE first_name = "${answer.employeeMan.split(' ')[0]}" AND last_name = "${answer.employeeMan.split(' ')[1]}"`, (err, res) =>{
+                    let managerId = res[0].id;
+                    db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${answer.firstName}', '${answer.lastName}', ${roleId}, ${managerId})`, (err, result) => {
+                        console.log(`Added ${answer.firstName} ${answer.lastName} to the database`);
+                        startApp();
+                    })
+                })
             })
         })
 };
